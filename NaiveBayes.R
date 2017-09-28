@@ -55,3 +55,17 @@ print(posClass/100) #P(C+)
 print(negClass/100) #P(C-)
 
 print(totalClass)
+
+print(csd[1])
+
+inv <- ((1/(sqrt(2*pi)*csd[1])))*exp(((4.6 - cm[1])^2)/(2*(csd[1]^2)))
+
+print(inv)
+
+print(Xtrain[58, "V1"])
+
+prob <- dnorm(Xtrain[,"V1"], cm[1], csd[1])
+
+print(prob)
+
+
