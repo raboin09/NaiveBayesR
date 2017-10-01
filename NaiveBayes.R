@@ -57,13 +57,13 @@ negTotalProb = length(negClass[,"V1"])/length(Xtrain[,"V1"])
 #apply(dat[,c('x','z')], 1, function(x) testFunc(x[1],x[2]))
 
 singleColFunc <- function(colVal, colStd, colMean) dnorm(colVal, colMean, colStd)
-totalColFunc <- function(col1, col2, col3, col4) prod(col1, col2, col3, col4)
+totalColFunc <- function(col1, col2, col3, col4) (prod(col1, col2, col3, col4))
 
-prob <- singleColFunc(posClass[1, "V1"], posStdDev[1], posMeans[1])
+prob <- totalColFunc(singleColFunc(posClass[1, "V1"], posStdDev[1], posMeans[1]), singleColFunc(posClass[1, "V2"], posStdDev[2], posMeans[2]), singleColFunc(posClass[1, "V3"], posStdDev[3], posMeans[3]), singleColFunc(posClass[1, "V4"], posStdDev[4], posMeans[4]))
 
 print(prob)
 
-#posprob <- dnorm(posClass[1, "V1"], posMeans["V1"], posStdDev[1]) * dnorm(posClass[1, "V2"], posMeans["V2"], posStdDev[2]) * dnorm(posClass[1, "V3"], posMeans["V3"], posStdDev[3]) * dnorm(posClass[1, "V4"], posMeans["V4"], posStdDev[4])
+posprob <- dnorm(posClass[1, "V1"], posMeans["V1"], posStdDev[1]) * dnorm(posClass[1, "V2"], posMeans["V2"], posStdDev[2]) * dnorm(posClass[1, "V3"], posMeans["V3"], posStdDev[3]) * dnorm(posClass[1, "V4"], posMeans["V4"], posStdDev[4])
 
 #negprob <- dnorm(posClass[1, "V1"], negMeans["V1"], negStdDev[1]) * dnorm(posClass[1, "V2"], negMeans["V2"], negStdDev[1]) * dnorm(posClass[1, "V3"], negMeans["V3"], negStdDev[1]) * dnorm(posClass[1, "V4"], negMeans["V4"], negStdDev[1])
 
@@ -71,7 +71,7 @@ print(prob)
 
 #print(applyProbs)
 
-#print(posprob)
+print(posprob)
 
 #prob <- dnorm(Xtrain[,"V1"], cm[1], csd[1])
 
