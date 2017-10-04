@@ -33,46 +33,28 @@ cm <- colMeans(Xtrain)
 csd <- colSds(Xtrain)
 
 posClass = Xtrain[idp, 1:d]
+posClassLength = length(posClass)
 posMeans = colMeans(posClass)
 posStdDev = colSds(posClass)
 posTotalProb = length(posClass[,"V1"])/length(Xtrain[,"V1"])
 
 negClass = Xtrain[-idp, 1:d]
+negClassLength = length(negClass)
 negMeans = colMeans(negClass)
 negStdDev = colSds(negClass)
 negTotalProb = length(negClass[,"V1"])/length(Xtrain[,"V1"])
 
-#print(posMeans[1])
-#print(posStdDev[1])
+prediction = rowSums(exp(dnorm(Xtrain, posMeans, posStdDev) * posTotalProb))
 
-#print(negMeans[1])
-#print(negStdDev[1])
+negprediction = rowSums(exp(dnorm(Xtrain, negMeans, negStdDev) * negTotalProb))
 
-#print(negTotalProb)
-#print(posTotalProb)
 
-#print(posClass[1, "V1"])
 
-#testFunc <- function(a, b) a + b
-#apply(dat[,c('x','z')], 1, function(x) testFunc(x[1],x[2]))
+print("Num of 1's:")
+print(sum(prediction > negprediction))
+print("Num of -1's:")
+print(sum(prediction < negprediction))
 
-singleColFunc <- function(colVal, colStd, colMean) dnorm(colVal, colMean, colStd)
-totalColFunc <- function(col1, col2, col3, col4) (prod(col1, col2, col3, col4))
 
-prob <- totalColFunc(singleColFunc(posClass[1, "V1"], posStdDev[1], posMeans[1]), singleColFunc(posClass[1, "V2"], posStdDev[2], posMeans[2]), singleColFunc(posClass[1, "V3"], posStdDev[3], posMeans[3]), singleColFunc(posClass[1, "V4"], posStdDev[4], posMeans[4]))
-
-print(prob)
-
-posprob <- dnorm(posClass[1, "V1"], posMeans["V1"], posStdDev[1]) * dnorm(posClass[1, "V2"], posMeans["V2"], posStdDev[2]) * dnorm(posClass[1, "V3"], posMeans["V3"], posStdDev[3]) * dnorm(posClass[1, "V4"], posMeans["V4"], posStdDev[4])
-
-#negprob <- dnorm(posClass[1, "V1"], negMeans["V1"], negStdDev[1]) * dnorm(posClass[1, "V2"], negMeans["V2"], negStdDev[1]) * dnorm(posClass[1, "V3"], negMeans["V3"], negStdDev[1]) * dnorm(posClass[1, "V4"], negMeans["V4"], negStdDev[1])
-
-#applyProbs <- apply(posClass[,"V1"], 2, function(x) singleColFunc(posClass, posStdDev, posMeans))
-
-#print(applyProbs)
-
-print(posprob)
-
-#prob <- dnorm(Xtrain[,"V1"], cm[1], csd[1])
 
 
