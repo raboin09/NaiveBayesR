@@ -3,7 +3,11 @@
 
 ##install.packages("matrixStats")
 
+##install.packages("e1071")
+
 library(matrixStats)
+
+library(e1071)
 
 ##You can use setwd("C:/YourPATH here/") to set the working directory..
 setwd("C:/Users/james.raboin/Desktop/NaiveBayesR-Master/")
@@ -18,6 +22,7 @@ d = dim(Xtrain)[2] - 1 # the last attribute is the class label, so it does not c
 idp = which(Xtrain[,d+1] ==1) # points that have 1 as the class label
 np = length(idp)
 Xpositive = Xtrain[idp,1:d]
+Xnegative = Xtrain[-idp,1:d]
 
 ##Testing .....
 Xtest=as.matrix(read.table(testingFile))
@@ -32,29 +37,51 @@ cm <- colMeans(Xtrain)
 
 csd <- colSds(Xtrain)
 
-posClass = Xtrain[idp, 1:d]
-posClassLength = length(posClass)
-posMeans = colMeans(posClass)
-posStdDev = colSds(posClass)
+posClass = Xpositive
+posMeans = colMeans(posClass[,1:4])
+posStdDev = apply(posClass, 2, sd)
 posTotalProb = length(posClass[,"V1"])/length(Xtrain[,"V1"])
 
-negClass = Xtrain[-idp, 1:d]
-negClassLength = length(negClass)
-negMeans = colMeans(negClass)
-negStdDev = colSds(negClass)
+negClass = Xnegative
+negMeans = colMeans(negClass[,1:4])
+negStdDev = apply(negClass, 2, sd)
 negTotalProb = length(negClass[,"V1"])/length(Xtrain[,"V1"])
 
-prediction = rowSums(exp(dnorm(Xtrain, posMeans, posStdDev) * posTotalProb))
+pospred = rowProds(dnorm(Xtest[,1:4], posMeans, posStdDev))
 
-negprediction = rowSums(exp(dnorm(Xtrain, negMeans, negStdDev) * negTotalProb))
+negpred = rowProds(dnorm(Xtest[,1:4], negMeans, negStdDev))
 
+#pospred = rowProds(pospred)
+#negpred = rowProds(negpred)
 
+#print(pospred[20:30])
+#print(negpred[20:30])
 
-print("Num of 1's:")
-print(sum(prediction > negprediction))
-print("Num of -1's:")
-print(sum(prediction < negprediction))
+for(i in 1:length(pospred)){
+  if(pospred[i] > negpred[i]){
+    totalpred[i] = 1
+  }
+  else{
+    totalpred[i] = -1
+  }
+}
 
+for(i in 1:length(totalpred)){
+  if(totalpred[i]==1 && Xtest[i,"V5"]==1)
+    tp = tp + 1
+  if(totalpred[i]==-1 && Xtest[i,"V5"]==1)
+    fn = fn + 1
+  if(totalpred[i]==1 && Xtest[i,"V5"]==-1)
+    fp = fp + 1
+  if(totalpred[i]==-1 && Xtest[i,"V5"]==-1)
+    tn = tn + 1
+}
 
-
-
+print("True pos: ")
+print(tp)
+print("True neg: ")
+print(tn)
+print("False pos: ")
+print(fp)
+print("False neg: ")
+print(fn)
