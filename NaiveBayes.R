@@ -3,11 +3,7 @@
 
 ##install.packages("matrixStats")
 
-##install.packages("e1071")
-
 library(matrixStats)
-
-library(e1071)
 
 ##You can use setwd("C:/YourPATH here/") to set the working directory..
 setwd("C:/Users/james.raboin/Desktop/NaiveBayesR-Master/")
@@ -37,44 +33,57 @@ cm <- colMeans(Xtrain)
 
 csd <- colSds(Xtrain)
 
-posClass = Xpositive
-posMeans = colMeans(posClass[,1:4])
-posStdDev = apply(posClass, 2, sd)
-posTotalProb = length(posClass[,"V1"])/length(Xtrain[,"V1"])
 
-negClass = Xnegative
-negMeans = colMeans(negClass[,1:4])
-negStdDev = apply(negClass, 2, sd)
-negTotalProb = length(negClass[,"V1"])/length(Xtrain[,"V1"])
 
-pospred = rowProds(dnorm(Xtest[,1:4], posMeans, posStdDev))
+posMeans <- colMeans(Xpositive[,1:d])
+posStdDev <- apply(Xpositive, 2, sd)
+posTotalProb <- dim(Xpositive)[1]/n
 
-negpred = rowProds(dnorm(Xtest[,1:4], negMeans, negStdDev))
+negMeans <- colMeans(Xnegative[,1:d])
+negStdDev <- apply(Xnegative, 2, sd)
+negTotalProb <- dim(Xnegative)[1]/n
 
-#pospred = rowProds(pospred)
-#negpred = rowProds(negpred)
-
-#print(pospred[20:30])
-#print(negpred[20:30])
-
-for(i in 1:length(pospred)){
-  if(pospred[i] > negpred[i]){
-    totalpred[i] = 1
+for(i in 1:nn){
+  posScore <- 1
+  negScore <- 1
+  predictedScore <- 0
+  
+  for(j in 1:d){
+    posScore <- posScore * dnorm(Xtest[i,j], posMeans[j], posStdDev[j])
+    negScore <- negScore * dnorm(Xtest[i,j], negMeans[j], negStdDev[j])
+  }
+  
+  posScore <- posScore * posTotalProb
+  negScore <- negScore * negTotalProb
+  
+  if(posScore > negScore){
+    predictedScore <- 1
   }
   else{
-    totalpred[i] = -1
+    predictedScore <- -1
   }
-}
-
-for(i in 1:length(totalpred)){
-  if(totalpred[i]==1 && Xtest[i,"V5"]==1)
+  
+  realScore = Xtest[i,d+1]
+  
+  if(is.null(predictedScore)){
+    print("predicted score is null")
+  }
+  if(is.null(realScore)){
+    print("test score is null")
+  }
+  if(predictedScore == 1 && realScore == 1){
     tp = tp + 1
-  if(totalpred[i]==-1 && Xtest[i,"V5"]==1)
-    fn = fn + 1
-  if(totalpred[i]==1 && Xtest[i,"V5"]==-1)
+  }
+  else if(predictedScore == 1 && realScore == -1){
     fp = fp + 1
-  if(totalpred[i]==-1 && Xtest[i,"V5"]==-1)
+  }
+  else if(predictedScore == -1 && realScore == -1){
     tn = tn + 1
+  }
+  else if(predictedScore == -1 && realScore == 1){
+    fn = fn + 1
+  }
+  
 }
 
 print("True pos: ")
@@ -85,3 +94,12 @@ print("False pos: ")
 print(fp)
 print("False neg: ")
 print(fn)
+
+precision <- (tp+tn)/nn
+
+recall <- (tp)/(tp+fn)
+
+print("Precision:")
+print(precision)
+print("Recall:")
+print(recall)
